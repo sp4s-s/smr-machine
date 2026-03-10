@@ -1,0 +1,13 @@
+#!/usr/sbin/dtrace -s
+
+pid$target::main:entry
+{
+  self->start = timestamp;
+}
+
+pid$target::main:return
+/self->start/
+{
+  printf("benchmark_runtime_ns=%lld\n", timestamp - self->start);
+  self->start = 0;
+}

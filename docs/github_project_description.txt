@@ -1,0 +1,1 @@
+Deterministic trading incident replay system with a C++20 lock-free SPSC transport, an OCaml checkpoint/rollback engine, and a live Lua ops terminal for profiling, failure capture, and post-mortem reconstruction.

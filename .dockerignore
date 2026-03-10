@@ -1,0 +1,7 @@
+.git
+_build
+build
+*.trace
+*.log
+*.sample.txt
+*.swp

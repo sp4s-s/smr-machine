@@ -1,0 +1,11 @@
+_build/
+build/
+__pycache__
+*.o
+*.a
+*.so
+*.dSYM/
+*.csv
+*.trace
+*.perf.data
+*.log

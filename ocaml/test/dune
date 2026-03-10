@@ -1,0 +1,4 @@
+(test
+ (name deterministic_test)
+ (libraries deterministic))
+

@@ -1,0 +1,9 @@
+# Deterministic replay scenario for an expensive-loss incident.
+SUBMIT 1000000 ord-100 alpha BUY 8 100
+FILL 1000010 ord-100 3 100
+SUBMIT 1000020 ord-101 beta SELL 5 101
+FILL 1000030 ord-101 5 101
+SUBMIT 1000040 ord-102 alpha SELL 6 99
+FILL 1000050 ord-102 6 99
+FAIL 1000060 venue-disconnect-loss-check
+
