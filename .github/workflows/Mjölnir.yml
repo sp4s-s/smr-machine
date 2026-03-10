@@ -1,0 +1,96 @@
+name: mjölnir
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5.2.0
+          dune-cache: true
+
+      - name: Install runner dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build ccache
+
+      - name: Install runner dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ninja ccache
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ccache
+            ~/Library/Caches/ccache
+          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'Makefile', 'dune-project', '**/dune', 'cpp/**/*.cpp', 'cpp/**/*.hpp', 'ocaml/**/*.ml', 'ocaml/**/*.mli', 'bin/**/*.ml', 'test/**/*.ml') }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
+
+      - name: Show toolchain
+        run: |
+          ocamlc -version
+          dune --version
+          cmake --version
+          ninja --version
+          clang++ --version
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DSMR_MACHINE_ENABLE_CCACHE=ON -DSMR_MACHINE_ENABLE_DUNE_CACHE=ON
+
+      - name: Build
+        run: cmake --build build --target all_smr_machine
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  bench-report:
+    name: Benchmark report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5.2.0
+          dune-cache: true
+
+      - name: Install runner dependencies
+        run: sudo apt-get update && sudo apt-get install -y ninja-build ccache
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DSMR_MACHINE_ENABLE_CCACHE=ON -DSMR_MACHINE_ENABLE_DUNE_CACHE=ON
+
+      - name: Build benchmark target
+        run: cmake --build build --target spsc_bench
+
+      - name: Generate benchmark report
+        run: cmake --build build --target bench_report
+
+      - name: Upload benchmark report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bench-results
+          path: docs/bench_results.md
