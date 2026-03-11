@@ -43,7 +43,7 @@ Microburst latency scatter isolates the tail behavior that aggregate percentiles
   <img src="assets/latency_microburst_analysis.png" alt="Latency microburst scatter — per-message latency over time, highlighting coordinated stall events" width="88%" />
 </p>
 
-Per-asset traded volume across the stress window. Distribution reflects the configured command weights (`SUBMIT 28 / MODIFY 30 / CANCEL 22 / FILL 18 / FAIL 2`) and invalid-action injection at 15bps:
+Stress window. Distribution reflects the configured command weights (`SUBMIT 28 / MODIFY 30 / CANCEL 22 / FILL 18 / FAIL 2`) and invalid-action injection at 15bps:
 
 <p align="center">
   <img src="assets/traded_volume_per_asset.png" alt="Traded volume per asset — fill distribution across symbols under configured command weight mix" width="88%" />
