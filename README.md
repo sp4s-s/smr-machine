@@ -174,7 +174,7 @@ bash scripts/deterministic_cli.sh \
   replay build/trading_terminal/replays/failure_1_lane_0.pr42 \
   --checkpoint 4 --rollback-seq 12
 ```
-
+- [ NOTEBOOK ](https://colab.research.google.com/drive/1EwSuFiWDzpiAqvNtf_64twUATRFTapEQ)
 ---
 
 ## Reference
