@@ -23,34 +23,24 @@ jobs:
         with:
           ocaml-compiler: 5.2.0
           dune-cache: true
+
+      - name: Install runner dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build ccache
+
       - name: Install runner dependencies (macOS)
         if: runner.os == 'macOS'
-        run: |
-          brew install ninja ccache
-          opam install dune
-      
-      - name: Export opam env
-        run: |
-          opam env --set-switch | tr -d '\r' >> $GITHUB_ENV
-      - name: Cache ccache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/ccache
-            ~/Library/Caches/ccache
-          key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'Makefile', 'dune-project', '**/dune', 'cpp/**/*.cpp', 'cpp/**/*.hpp', 'ocaml/**/*.ml', 'ocaml/**/*.mli', 'bin/**/*.ml', 'test/**/*.ml') }}
-          restore-keys: |
-            ccache-${{ runner.os }}-
+        run: brew install ninja ccache
 
-            
+      - name: Install OCaml deps
+        run: opam install dune
+
       - name: Show toolchain
         run: |
-          eval $(opam env)
           ocamlc -version
           dune --version
           cmake --version
           ninja --version
-          clang++ --version
 
       - name: Configure
         run: |
