@@ -30,6 +30,11 @@ jobs:
           opam install dune
           eval $(opam env)
 
+      - name: Check CMake configure
+        run: |
+          eval $(opam env)
+          cmake -S . -B build -G Ninja -DSMR_MACHINE_ENABLE_CCACHE=OFF -DSMR_MACHINE_ENABLE_DUNE_CACHE=OFF
+
       - name: Show toolchain
         run: |
           eval $(opam env)
