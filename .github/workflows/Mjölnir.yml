@@ -23,18 +23,15 @@ jobs:
         with:
           ocaml-compiler: 5.2.0
           dune-cache: true
-      - name: Install runner dependencies (Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update && sudo apt-get install -y ninja-build ccache
-          opam install dune
-          echo "$(opam env)" >> $GITHUB_ENV
       - name: Install runner dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
           brew install ninja ccache
           opam install dune
-          echo "$(opam env)" >> $GITHUB_ENV
+      
+      - name: Export opam env
+        run: |
+          opam env --set-switch | tr -d '\r' >> $GITHUB_ENV
       - name: Cache ccache
         uses: actions/cache@v4
         with:
@@ -44,17 +41,27 @@ jobs:
           key: ccache-${{ runner.os }}-${{ hashFiles('CMakeLists.txt', 'Makefile', 'dune-project', '**/dune', 'cpp/**/*.cpp', 'cpp/**/*.hpp', 'ocaml/**/*.ml', 'ocaml/**/*.mli', 'bin/**/*.ml', 'test/**/*.ml') }}
           restore-keys: |
             ccache-${{ runner.os }}-
+
+            
       - name: Show toolchain
         run: |
+          eval $(opam env)
           ocamlc -version
           dune --version
           cmake --version
           ninja --version
           clang++ --version
+
       - name: Configure
-        run: cmake -S . -B build -G Ninja -DSMR_MACHINE_ENABLE_CCACHE=ON -DSMR_MACHINE_ENABLE_DUNE_CACHE=ON
+        run: |
+          eval $(opam env)
+          cmake -S . -B build -G Ninja -DSMR_MACHINE_ENABLE_CCACHE=ON -DSMR_MACHINE_ENABLE_DUNE_CACHE=ON
+
       - name: Build
-        run: cmake --build build --target all_smr_machine
+        run: |
+          eval $(opam env)
+          cmake --build build --target all_smr_machine
+
       - name: Test
         run: ctest --test-dir build --output-on-failure
   bench-report:
