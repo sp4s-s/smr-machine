@@ -23,7 +23,12 @@ jobs:
 
       - name: Install runner dependencies
         run: sudo apt-get update && sudo apt-get install -y lua5.4 opam ninja
-        run: opam install dune
+
+      - name: Install dune & opam switch
+        run: |
+          echo 'eval $(opam env)' >> ~/.bashrc
+          opam install dune
+        
 
       - name: Show toolchain
         run: |
