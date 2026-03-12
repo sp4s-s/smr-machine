@@ -22,7 +22,7 @@ jobs:
           dune-cache: true
 
       - name: Install runner dependencies
-        run: sudo apt-get update && sudo apt-get install -y lua5.4 opam ninja
+        run: sudo apt-get update && sudo apt-get install -y lua5.4 opam ninja-build
 
       - name: Install dune & opam switch
         run: |
